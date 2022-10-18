@@ -29,6 +29,7 @@ async fn main() {
 struct FeedItem {
     title: String,
     link: String,
+    pub_date: String,
 }
 
 // 参考：https://blog-dry.com/entry/2018/03/21/225533
@@ -40,6 +41,7 @@ fn fetch_feed(url: &str) -> Vec<FeedItem> {
         .map(|item| FeedItem {
             title: item.title().unwrap().to_string(),
             link: item.link().unwrap().to_string(),
+            pub_date: item.pub_date().unwrap().to_string(),
         })
         .collect();
     items
