@@ -48,9 +48,23 @@ fn fetch_feed(url: &str) -> Vec<FeedItem> {
     items
 }
 
+// TODO: 引数の型で配列の要素数を入れなきゃいけないのはなんかおかしいから直すす
+fn fetch_feeds(urls: [&str; 3]) -> Vec<FeedItem> {
+    let mut items = vec![];
+    urls.iter().for_each(|url| {
+        let mut fetch_items = fetch_feed(url);
+        items.append(&mut fetch_items);
+    });
+    items
+}
+
 async fn root() -> &'static str {
-    let url = "https://ysk-pro.hatenablog.com/rss";
-    let mut items = fetch_feed(url);
+    let urls = [
+        "https://ysk-pro.hatenablog.com/rss",
+        "https://blog.otegal.dev/rss.xml",
+        "https://zenn.dev/yagince/feed",
+    ];
+    let mut items = fetch_feeds(urls);
     // 日付でのソート：https://shinshin86.hateblo.jp/entry/2022/03/26/060000
     items.sort_by(|a, b| {
         let duration = DateTime::parse_from_rfc2822(&*a.pub_date).unwrap() - DateTime::parse_from_rfc2822(&*b.pub_date).unwrap();
