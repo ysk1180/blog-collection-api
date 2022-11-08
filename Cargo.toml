@@ -13,3 +13,4 @@ tokio = {version = "1.21.2", features = ["full"]}
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
 rss = { version = "1.0", features = ["from_url"] }
+chrono = "0.4"
