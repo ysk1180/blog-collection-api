@@ -1,6 +1,6 @@
 // 参考: https://zenn.dev/kowaremonoid/articles/7e077f9eb4439b
 
-use axum::{routing::get, Router};
+use axum::{routing::get, Router, Json};
 use chrono::{DateTime};
 use rss::Channel;
 use serde::Serialize;
@@ -33,6 +33,9 @@ struct FeedItem {
     pub_date: String,
 }
 
+#[derive(Serialize)]
+struct ItemList(Vec<FeedItem>);
+
 // 参考：https://blog-dry.com/entry/2018/03/21/225533
 fn fetch_feed(url: &str) -> Vec<FeedItem> {
     let channel = Channel::from_url(url).unwrap();
@@ -58,7 +61,7 @@ fn fetch_feeds(urls: [&str; 3]) -> Vec<FeedItem> {
     items
 }
 
-async fn root() -> &'static str {
+async fn root() -> axum::extract::Json<ItemList> {
     let urls = [
         "https://ysk-pro.hatenablog.com/rss",
         "https://blog.otegal.dev/rss.xml",
@@ -76,7 +79,7 @@ async fn root() -> &'static str {
             Ordering::Greater
         }
     });
-    items.iter()
-        .for_each(|item| println!("{}", serde_json::to_string(&item).unwrap()));
-    "Hello, World!"
+
+    // jsonでレスポンスを返せるようにした（参考: https://github.com/joelparkerhenderson/demo-rust-axum#respond-with-a-json-payload ）
+    Json(ItemList(items))
 }
